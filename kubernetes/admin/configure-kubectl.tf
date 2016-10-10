@@ -11,9 +11,11 @@ resource "null_resource" "configure-kubectl" {
   provisioner "local-exec" {
     command = "echo '${var.ca_cert_pem}' | tee ${path.module}/ca.pem && chmod 644 ${path.module}/ca.pem"
   }
+
   provisioner "local-exec" {
     command = "echo '${tls_locally_signed_cert.kube-admin.cert_pem}' | tee ${path.module}/admin.pem && chmod 644 ${path.module}/admin.pem"
   }
+
   provisioner "local-exec" {
     command = "echo '${tls_private_key.kube-admin.private_key_pem}' | tee ${path.module}/admin-key.pem && chmod 600 ${path.module}/admin-key.pem"
   }
@@ -22,12 +24,15 @@ resource "null_resource" "configure-kubectl" {
   provisioner "local-exec" {
     command = "${var.kubectl} config set-cluster default-cluster-${var.cluster_id} --server=https://${var.kubectl_server_ip} --certificate-authority=${path.module}/ca.pem"
   }
+
   provisioner "local-exec" {
     command = "${var.kubectl} config set-credentials default-admin-${var.cluster_id} --certificate-authority=${path.module}/ca.pem --client-key=${path.module}/admin-key.pem --client-certificate=${path.module}/admin.pem"
   }
+
   provisioner "local-exec" {
     command = "${var.kubectl} config set-context default-system-${var.cluster_id} --cluster=default-cluster-${var.cluster_id} --user=default-admin-${var.cluster_id}"
   }
+
   provisioner "local-exec" {
     command = "${var.kubectl} config use-context default-system-${var.cluster_id}"
   }

@@ -1,5 +1,6 @@
 resource "null_resource" "configure-docker-dameon-certs" {
-  count      = "${var.docker_daemon_count}"
+  count = "${var.docker_daemon_count}"
+
   # Changes to the number of masters/workers triggers the provisioner again across
   # all instances.
   triggers {
@@ -13,10 +14,11 @@ resource "null_resource" "configure-docker-dameon-certs" {
   }
 
   connection {
-    user         = "${var.user}"
-    private_key  = "${var.private_key}"
-    host         = "${element(var.deploy_ssh_hosts, count.index)}"
+    user        = "${var.user}"
+    private_key = "${var.private_key}"
+    host        = "${element(var.deploy_ssh_hosts, count.index)}"
   }
+
   provisioner "remote-exec" {
     inline = [
       "if [ ! -d '/etc/docker' ]; then sudo mkdir /etc/docker;fi",
@@ -25,7 +27,7 @@ resource "null_resource" "configure-docker-dameon-certs" {
       "echo '${element(tls_locally_signed_cert.docker_daemon.*.cert_pem, count.index)}' | sudo tee /etc/docker/server.pem",
       "sudo chmod 644 /etc/docker/ca.pem",
       "sudo chmod 600 /etc/docker/server-key.pem",
-      "sudo chmod 644 /etc/docker/server.pem"
+      "sudo chmod 644 /etc/docker/server.pem",
     ]
   }
 }

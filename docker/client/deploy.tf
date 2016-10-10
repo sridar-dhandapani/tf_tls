@@ -1,5 +1,6 @@
 resource "null_resource" "configure-docker-client-certs" {
-  count      = "${var.docker_client_count}"
+  count = "${var.docker_client_count}"
+
   # Changes to the number of masters/workers triggers the provisioner again across
   # all instances.
   triggers {
@@ -13,10 +14,11 @@ resource "null_resource" "configure-docker-client-certs" {
   }
 
   connection {
-    user         = "${var.user}"
-    private_key  = "${var.private_key}"
-    host         = "${element(var.deploy_ssh_hosts, count.index)}"
+    user        = "${var.user}"
+    private_key = "${var.private_key}"
+    host        = "${element(var.deploy_ssh_hosts, count.index)}"
   }
+
   provisioner "remote-exec" {
     inline = [
       "if [ ! -d '~/.docker' ]; then mkdir ~/.docker;fi",
@@ -26,7 +28,7 @@ resource "null_resource" "configure-docker-client-certs" {
       "sudo chmod 644 /home/${var.user}/.docker/ca.pem",
       "sudo chmod 600 /home/${var.user}/.docker/key.pem",
       "sudo chmod 644 /home/${var.user}/.docker/cert.pem",
-      "sudo chown ${var.user}:${var.user} /home/${var.user}/.docker/*"
+      "sudo chown ${var.user}:${var.user} /home/${var.user}/.docker/*",
     ]
   }
 }
