@@ -1,5 +1,5 @@
 resource "null_resource" "configure-master-certs" {
-  count      = "${var.master_count}"
+  count = "${var.master_count}"
 
   triggers {
     master_count          = "${var.master_count}"
@@ -12,9 +12,9 @@ resource "null_resource" "configure-master-certs" {
   }
 
   connection {
-    user         = "${var.ssh_user}"
-    private_key  = "${var.ssh_private_key}"
-    host         = "${element(var.deploy_ssh_hosts, count.index)}"
+    user        = "${var.ssh_user}"
+    private_key = "${var.ssh_private_key}"
+    host        = "${element(var.deploy_ssh_hosts, count.index)}"
   }
 
   provisioner "remote-exec" {
@@ -23,7 +23,7 @@ resource "null_resource" "configure-master-certs" {
       "echo '${tls_private_key.master.private_key_pem}' | sudo tee /etc/kubernetes/ssl/master-key.pem",
       "echo '${element(tls_locally_signed_cert.master.*.cert_pem, count.index)}' | sudo tee /etc/kubernetes/ssl/master.pem",
       "sudo chmod 600 /etc/kubernetes/ssl/master-key.pem",
-      "sudo chmod 644 /etc/kubernetes/ssl/master.pem"
+      "sudo chmod 644 /etc/kubernetes/ssl/master.pem",
     ]
   }
 }

@@ -1,17 +1,3 @@
-variable "ca_cert_pem" {}
-variable "ca_private_key_pem" {}
-variable "ip_addresses_list" {}
-# supports if you have a public/private ip and you want to set the private ip
-# for internal cert but use the public_ip to connect via ssh
-variable "deploy_ssh_hosts" {}
-variable "dns_names_list" { default = "*.*.cluster.internal,*.ec2.internal" }
-variable "docker_client_count" {}
-variable "private_key" {}
-variable "ca_cert_pem" {}
-variable "validity_period_hours" {}
-variable "early_renewal_hours" {}
-variable "user" {}
-
 # docker_client certs
 resource "tls_private_key" "docker_client" {
   algorithm = "RSA"
@@ -23,10 +9,10 @@ resource "tls_cert_request" "docker_client" {
   private_key_pem = "${tls_private_key.docker_client.private_key_pem}"
 
   subject {
-    common_name  = "docker_client_${count.index}"
+    common_name = "docker_client_${count.index}"
   }
 
-  dns_names = ["${split(",", var.dns_names_list)}"]
+  dns_names    = ["${split(",", var.dns_names_list)}"]
   ip_addresses = ["${element(var.ip_addresses_list, count.index)}"]
 }
 
@@ -44,14 +30,6 @@ resource "tls_locally_signed_cert" "docker_client" {
     "server_auth",
     "client_auth",
     "digital_signature",
-    "key_encipherment"
+    "key_encipherment",
   ]
-}
-
-output "private_key" {
-  value = "${tls_private_key.docker_client.private_key_pem}"
-}
-
-output "cert_pems" {
-  value = "${join(",", tls_locally_signed_cert.docker_client.*.cert_pem)}"
 }
