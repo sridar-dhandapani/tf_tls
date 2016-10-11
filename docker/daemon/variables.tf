@@ -16,8 +16,6 @@ variable "docker_daemon_count" {}
 
 variable "private_key" {}
 
-variable "ca_cert_pem" {}
-
 variable "validity_period_hours" {
   default = 8760
 }
