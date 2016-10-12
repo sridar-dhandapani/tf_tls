@@ -2,7 +2,9 @@ variable "ca_cert_pem" {}
 
 variable "ca_private_key_pem" {}
 
-variable "ip_addresses" {}
+variable "ip_addresses" {
+  type = "list"
+}
 
 variable "dns_names" {
   default = ""
