@@ -7,7 +7,8 @@ variable "ip_addresses" {
 }
 
 variable "dns_names" {
-  default = ""
+  type = "list"
+  default = []
 }
 
 # supports if you have a public/private ip and you want to set the private ip
@@ -19,7 +20,8 @@ variable "deploy_ssh_hosts" {
 variable "master_count" {}
 
 variable "kube_service_ip" {
-  default = "10.3.0.1"
+  type = "list"
+  default = ["10.3.0.1"]
 }
 
 variable "validity_period_hours" {
